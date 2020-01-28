@@ -1,7 +1,7 @@
 ---
 title: "Test statistical assignment"
-author: "Alexey Bessudnov"
-date: "22 January 2020"
+author: "Youran Xu"
+date: "27 January 2020"
 output: github_document
 ---
 
@@ -25,7 +25,7 @@ First, we need to read the data into R. For this assignment, I ask you to use da
 ```{r}
 library(tidyverse)
 # This attaches the tidyverse package. If you get an error here you need to install the package first. 
-Data <- read_tsv("")
+Data <- read_tsv("/Users/youran/Data3-2020/data/UKDA-6614-tab/tab/ukhls_w9/i_youth.tab")
 # You need to add between the quotation marks a full path to the required file on your computer.
 ```
 
@@ -37,7 +37,15 @@ Tabulate three variables: children's gender, age (please use derived variables) 
 
 ```{r}
 # add your code here
+library(magrittr)
+library(dplyr)
 
+Data <- Data %>% 
+  select(i_sex_dv, i_age_dv, i_ypsocweb)
+
+table(Data$i_sex_dv)
+table(Data$i_age_dv)
+table(Data$i_ypsocweb)
 ```
 
 ## Recode variables (10 points)
@@ -46,6 +54,18 @@ We want to create a new binary variable for having an account on social media so
 
 ```{r}
 # add your code here
+Data <- Data %>% 
+  mutate(social.account = recode(i_ypsocweb,
+                                 "1" = 1,
+                                 "2" = 0,
+                                 .default = NA_real_))
+Data <- Data %>% 
+  mutate(gender = recode(i_sex_dv,
+                         "1" = "male",
+                         "2" = "female",
+                         .default = NA_character_))
+Data %>% head(5)
+
 ```
 
 ## Calculate means (10 points)
@@ -54,11 +74,26 @@ Produce code that calculates probabilities of having an account on social media 
 
 ```{r}
 # add your code here
+Data %>% 
+  group_by(i_age_dv) %>% 
+  summarise(
+    mean_age = mean(social.account, na.rm = TRUE) * 100
+  )
+
+Data %>% 
+  group_by(gender) %>% 
+  summarise(
+    mean_gender = mean(social.account, na.rm = TRUE) * 100
+  )
+
 ```
 
 ## Write short interpretation (10 points)
 
 Write two or three sentences interpreting your findings above.
+- The majority of the participants have a social media account.
+- The probability of having a social media account increases with age.
+- Females are slightly more likely to have a social media account compared to males, with a difference of 5.7 percentage points.
 
 ## Visualise results (20 points)
 
@@ -66,6 +101,10 @@ Create a statistical graph (only one, but it can be faceted) illustrating your r
 
 ```{r}
 # add your code here
+
+  
+  
+
 ```
 
 ## Conclusion
